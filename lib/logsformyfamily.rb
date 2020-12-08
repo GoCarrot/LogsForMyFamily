@@ -2,7 +2,7 @@
 
 require 'logsformyfamily/version'
 
-module Logsformyfamily
+module LogsForMyFamily
   class Error < StandardError; end
   # Your code goes here...
 end

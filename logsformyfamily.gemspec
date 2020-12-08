@@ -6,7 +6,7 @@ require 'logsformyfamily/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'logsformyfamily'
-  spec.version       = Logsformyfamily::VERSION
+  spec.version       = LogsForMyFamily::VERSION
   spec.authors       = ['Pat Wilson']
   spec.email         = ['pat@teak.io']
 
