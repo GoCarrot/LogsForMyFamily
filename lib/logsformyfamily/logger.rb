@@ -7,6 +7,7 @@ module LogsForMyFamily
     def initialize
       @backends = []
       @host_config = {}
+      @request_config = {}
     end
 
     def configure_for(version: nil, hostname: `hostname`.strip, app_name: ENV['NEWRELIC_APP'])
@@ -14,6 +15,14 @@ module LogsForMyFamily
         version: version,
         hostname: hostname,
         app_name: app_name
+      }
+      self
+    end
+
+    def set_request(client_request_info: {}, request_id: ENV['core_app.request_id'])
+      @request_config = {
+        request_id: request_id,
+        client_request_info: client_request_info
       }
       self
     end
@@ -48,6 +57,7 @@ module LogsForMyFamily
         thread_id: Thread.current.object_id
       }
                     .merge(@host_config)
+                    .merge(@request_config)
                     .merge(event_data)
 
       @backends.each do |backend|
