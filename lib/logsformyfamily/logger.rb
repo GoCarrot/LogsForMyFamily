@@ -9,6 +9,15 @@ module LogsForMyFamily
       @host_config = {}
     end
 
+    def configure_for(version: nil, hostname: `hostname`.strip, app_name: ENV['NEWRELIC_APP'])
+      @host_config = {
+        version: version,
+        hostname: hostname,
+        app_name: app_name
+      }
+      self
+    end
+
     %i[
       debug
       info
