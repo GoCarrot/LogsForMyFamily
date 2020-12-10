@@ -96,4 +96,31 @@ RSpec.describe LogsForMyFamily::Logger do
       expect(last_log.data).to include(client_request_info: client_request_info)
     end
   end
+
+  LogsForMyFamily::Logger::LEVELS.each_with_index do |level, index|
+    context "when log level based filtering is :#{level}" do
+      before do
+        subject.filter_level level
+      end
+
+      if index > 0
+        LogsForMyFamily::Logger::LEVELS[0..(index - 1)].each do |inner_level|
+          it "does not log messages with level: #{inner_level}" do
+            subject.send(inner_level, 'foo', 'bar')
+            expect(last_log).to be nil
+          end
+        end
+      end
+
+      LogsForMyFamily::Logger::LEVELS[index..-1].each do |inner_level|
+        it "logs messages with level: #{inner_level}" do
+          subject.send(inner_level, 'foo', 'bar')
+          expect(last_log).not_to be nil
+          expect(last_log.level).to eql inner_level
+          expect(last_log.type).to eql 'foo'
+          expect(last_log.data).to include(message: 'bar')
+        end
+      end
+    end
+  end
 end
