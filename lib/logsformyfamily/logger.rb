@@ -61,6 +61,7 @@ module LogsForMyFamily
     def internal_log(level, level_name, event_type, event_data)
       timestamp = Time.now.to_f # Do this first before filtering or any other things
 
+      # Filter based on log level
       return unless level >= @filter_level
 
       event_data = { message: event_data } unless event_data.is_a?(Hash)

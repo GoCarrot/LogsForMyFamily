@@ -121,6 +121,23 @@ RSpec.describe LogsForMyFamily::Logger do
           expect(last_log.data).to include(message: 'bar')
         end
       end
+
+      if level == :audit
+        context 'after #clear_filter_level is called' do
+          before do
+            subject.clear_filter_level
+          end
+          LogsForMyFamily::Logger::LEVELS.each do |inner_level|
+            it "logs messages with level: #{inner_level}" do
+              subject.send(inner_level, 'foo', 'bar')
+              expect(last_log).not_to be nil
+              expect(last_log.level).to eql inner_level
+              expect(last_log.type).to eql 'foo'
+              expect(last_log.data).to include(message: 'bar')
+            end
+          end
+        end
+      end
     end
   end
 end
