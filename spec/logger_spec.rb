@@ -140,4 +140,67 @@ RSpec.describe LogsForMyFamily::Logger do
       end
     end
   end
+
+  context 'when logging 25% of calls with stubbed values: [0.1, 0.2, 0.3]' do
+    before do
+      test_values = [0.1, 0.2, 0.3]
+      subject.filter_percentage(percent: 0.25, on: Proc.new { test_values.slice!(0) })
+    end
+
+    it 'logs the first two calls, but not the third' do
+      subject.debug('foo', 'bar')
+      expect(logs.count).to be 1
+
+      subject.debug('foo', 'bar')
+      expect(logs.count).to be 2
+
+      subject.debug('foo', 'bar')
+      expect(logs.count).to be 2
+    end
+  end
+
+  context 'when logging a percentage calls below :error' do
+    class FilterFunctor
+      attr_accessor :called
+
+      def initialize
+        @called = false
+      end
+
+      def call(_arg)
+        @called = true
+        1.0
+      end
+    end
+
+    let(:functor) { FilterFunctor.new }
+
+    before do
+      subject.filter_percentage(percent: 0.25, on: functor, below_level: :error)
+    end
+
+    it 'does not test to see if it should log error' do
+      subject.error('foo', 'bar')
+      expect(logs.count).to be 1
+      expect(functor.called).to be false
+    end
+
+    it 'tests before logging levels below error' do
+      subject.warning('foo', 'bar')
+      expect(logs.count).to be 0
+      expect(functor.called).to be true
+    end
+
+    context 'after #clear_filter_percentage is called' do
+      before do
+        subject.clear_filter_percentage
+      end
+
+      it 'does not test to see if it should log debug' do
+        subject.debug('foo', 'bar')
+        expect(logs.count).to be 1
+        expect(functor.called).to be false
+      end
+    end
+  end
 end

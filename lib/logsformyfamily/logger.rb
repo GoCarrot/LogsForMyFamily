@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'digest'
 
 module LogsForMyFamily
   class Logger
@@ -22,6 +23,9 @@ module LogsForMyFamily
       @request_config = {}
       @event_id = 0
       @filter_level = 0
+      @filter_percent = 1.0
+      @filter_percent_on = nil
+      @filter_percent_below_level = 0
     end
 
     def configure_for(version: nil, hostname: `hostname`.strip, app_name: ENV['NEWRELIC_APP'])
@@ -52,6 +56,22 @@ module LogsForMyFamily
       self
     end
 
+    def filter_percentage(percent: 1.0, on: Proc.new { rand }, below_level: 1)
+      @filter_percent = percent
+
+      below_level = LEVELS.find_index(below_level) if below_level.is_a?(Symbol)
+      @filter_percent_below_level = below_level < 1 ? 1 : below_level
+
+      @filter_percent_on = on if on.respond_to?(:call)
+      @filter_percent_on = Proc.new { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2147483647).to_f / 2147483646.0 } if on.is_a?(Symbol)
+      self
+    end
+
+    def clear_filter_percentage
+      @filter_percent_on = nil
+      self
+    end
+
     LEVELS.each_with_index do |level, index|
       define_method level do |event_type, event_data|
         internal_log(index, level, event_type, event_data)
@@ -76,6 +96,11 @@ module LogsForMyFamily
                     .merge(@request_config)
                     .merge(event_data)
 
+      # Filter based on log-sampling
+      if @filter_percent_on && level < @filter_percent_below_level
+        val = @filter_percent_on.call(merged_data)
+        return unless val <= @filter_percent
+      end
 
       # Don't increment until filtering is complete
       @event_id += 1
