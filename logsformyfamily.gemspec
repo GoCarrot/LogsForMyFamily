@@ -11,8 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['pat@teak.io']
 
   spec.summary       = 'Logging for Teak backend services.'
-  # spec.description   = %q{TODO: Write a longer description or delete this line.}
-  # spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = 'https://github.com/GoCarrot/LogsForMyFamily'
   spec.license       = 'MIT'
 
   # Specify which files should be added to the gem when it is released.
