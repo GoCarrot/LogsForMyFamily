@@ -73,7 +73,7 @@ RSpec.describe LogsForMyFamily::Logger do
     end
   end
 
-  context 'when configured for a request' do
+  describe '#set_request' do
     let(:client_request_info) { { foo: 'bar', fizz: 'buzz' } }
     let(:request_id) { 'arequestid' }
 
@@ -95,45 +95,62 @@ RSpec.describe LogsForMyFamily::Logger do
       expect(last_log.level).to eql :info
       expect(last_log.data).to include(client_request_info: client_request_info)
     end
+
+    describe '#merge_client_request_info' do
+      let(:added_client_request_info) { { brew: :haha } }
+
+      before do
+        subject.merge_client_request_info added_client_request_info
+      end
+
+      it 'contains the merged client request info' do
+        subject.info('foo', 'bar')
+        expect(last_log).not_to be nil
+        expect(last_log.level).to eql :info
+        expect(last_log.data).to include(client_request_info: hash_including(added_client_request_info))
+      end
+    end
   end
 
-  LogsForMyFamily::Logger::LEVELS.each_with_index do |level, index|
-    context "when log level based filtering is :#{level}" do
-      before do
-        subject.filter_level level
-      end
-
-      if index > 0
-        LogsForMyFamily::Logger::LEVELS[0..(index - 1)].each do |inner_level|
-          it "does not log messages with level: #{inner_level}" do
-            subject.send(inner_level, 'foo', 'bar')
-            expect(last_log).to be nil
-          end
+  describe '#filter_level' do
+    LogsForMyFamily::Logger::LEVELS.each_with_index do |level, index|
+      context "when log level based filtering is :#{level}" do
+        before do
+          subject.filter_level level
         end
-      end
 
-      LogsForMyFamily::Logger::LEVELS[index..-1].each do |inner_level|
-        it "logs messages with level: #{inner_level}" do
-          subject.send(inner_level, 'foo', 'bar')
-          expect(last_log).not_to be nil
-          expect(last_log.level).to eql inner_level
-          expect(last_log.type).to eql 'foo'
-          expect(last_log.data).to include(message: 'bar')
-        end
-      end
-
-      if level == :audit
-        context 'after #clear_filter_level is called' do
-          before do
-            subject.clear_filter_level
-          end
-          LogsForMyFamily::Logger::LEVELS.each do |inner_level|
-            it "logs messages with level: #{inner_level}" do
+        if index > 0
+          LogsForMyFamily::Logger::LEVELS[0..(index - 1)].each do |inner_level|
+            it "does not log messages with level: #{inner_level}" do
               subject.send(inner_level, 'foo', 'bar')
-              expect(last_log).not_to be nil
-              expect(last_log.level).to eql inner_level
-              expect(last_log.type).to eql 'foo'
-              expect(last_log.data).to include(message: 'bar')
+              expect(last_log).to be nil
+            end
+          end
+        end
+
+        LogsForMyFamily::Logger::LEVELS[index..-1].each do |inner_level|
+          it "logs messages with level: #{inner_level}" do
+            subject.send(inner_level, 'foo', 'bar')
+            expect(last_log).not_to be nil
+            expect(last_log.level).to eql inner_level
+            expect(last_log.type).to eql 'foo'
+            expect(last_log.data).to include(message: 'bar')
+          end
+        end
+
+        if level == :audit
+          describe '#clear_filter_level' do
+            before do
+              subject.clear_filter_level
+            end
+            LogsForMyFamily::Logger::LEVELS.each do |inner_level|
+              it "logs messages with level: #{inner_level}" do
+                subject.send(inner_level, 'foo', 'bar')
+                expect(last_log).not_to be nil
+                expect(last_log.level).to eql inner_level
+                expect(last_log.type).to eql 'foo'
+                expect(last_log.data).to include(message: 'bar')
+              end
             end
           end
         end
@@ -141,65 +158,67 @@ RSpec.describe LogsForMyFamily::Logger do
     end
   end
 
-  context 'when logging 25% of calls with stubbed values: [0.1, 0.2, 0.3]' do
-    before do
-      test_values = [0.1, 0.2, 0.3]
-      subject.filter_percentage(percent: 0.25, on: Proc.new { test_values.slice!(0) })
-    end
-
-    it 'logs the first two calls, but not the third' do
-      subject.debug('foo', 'bar')
-      expect(logs.count).to be 1
-
-      subject.debug('foo', 'bar')
-      expect(logs.count).to be 2
-
-      subject.debug('foo', 'bar')
-      expect(logs.count).to be 2
-    end
-  end
-
-  context 'when logging a percentage calls below :error' do
-    class FilterFunctor
-      attr_accessor :called
-
-      def initialize
-        @called = false
-      end
-
-      def call(_arg)
-        @called = true
-        1.0
-      end
-    end
-
-    let(:functor) { FilterFunctor.new }
-
-    before do
-      subject.filter_percentage(percent: 0.25, on: functor, below_level: :error)
-    end
-
-    it 'does not test to see if it should log error' do
-      subject.error('foo', 'bar')
-      expect(logs.count).to be 1
-      expect(functor.called).to be false
-    end
-
-    it 'tests before logging levels below error' do
-      subject.warning('foo', 'bar')
-      expect(logs.count).to be 0
-      expect(functor.called).to be true
-    end
-
-    context 'after #clear_filter_percentage is called' do
+  describe '#filter_percentage' do
+    context 'when logging 25% of calls with stubbed values: [0.1, 0.2, 0.3]' do
       before do
-        subject.clear_filter_percentage
+        test_values = [0.1, 0.2, 0.3]
+        subject.filter_percentage(percent: 0.25, on: Proc.new { test_values.slice!(0) })
       end
 
-      it 'does not test to see if it should log debug' do
+      it 'logs the first two calls, but not the third' do
         subject.debug('foo', 'bar')
         expect(logs.count).to be 1
+
+        subject.debug('foo', 'bar')
+        expect(logs.count).to be 2
+
+        subject.debug('foo', 'bar')
+        expect(logs.count).to be 2
+      end
+    end
+
+    context 'when logging a percentage calls below :error' do
+      class FilterFunctor
+        attr_accessor :called
+
+        def initialize
+          @called = false
+        end
+
+        def call(_arg)
+          @called = true
+          1.0
+        end
+      end
+
+      let(:functor) { FilterFunctor.new }
+
+      before do
+        subject.filter_percentage(percent: 0.25, on: functor, below_level: :error)
+      end
+
+      it 'does not test to see if it should log error' do
+        subject.error('foo', 'bar')
+        expect(logs.count).to be 1
         expect(functor.called).to be false
+      end
+
+      it 'tests before logging levels below error' do
+        subject.warning('foo', 'bar')
+        expect(logs.count).to be 0
+        expect(functor.called).to be true
+      end
+
+      describe '#clear_filter_percentage' do
+        before do
+          subject.clear_filter_percentage
+        end
+
+        it 'does not test to see if it should log debug' do
+          subject.debug('foo', 'bar')
+          expect(logs.count).to be 1
+          expect(functor.called).to be false
+        end
       end
     end
   end

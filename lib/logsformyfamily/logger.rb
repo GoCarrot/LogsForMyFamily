@@ -45,6 +45,11 @@ module LogsForMyFamily
       self
     end
 
+    def merge_client_request_info(info)
+      @request_config[:client_request_info] = @request_config[:client_request_info].merge(info)
+      self
+    end
+
     def filter_level(level)
       level = LEVELS.find_index(level) if level.is_a?(Symbol)
       @filter_level = level
