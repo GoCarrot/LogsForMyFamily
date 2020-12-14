@@ -56,6 +56,10 @@ module LogsForMyFamily
       self
     end
 
+    def proc_for_event_data(on: on)
+      Proc.new { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2147483647).to_f / 2147483646.0 }
+    end
+
     def filter_percentage(percent: 1.0, on: Proc.new { rand }, below_level: 1)
       @filter_percent = percent
 
@@ -63,7 +67,7 @@ module LogsForMyFamily
       @filter_percent_below_level = below_level < 1 ? 1 : below_level
 
       @filter_percent_on = on if on.respond_to?(:call)
-      @filter_percent_on = Proc.new { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2147483647).to_f / 2147483646.0 } if on.is_a?(Symbol)
+      @filter_percent_on = proc_for_event_data(on) if on.is_a?(Symbol)
       self
     end
 

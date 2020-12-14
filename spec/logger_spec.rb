@@ -203,4 +203,16 @@ RSpec.describe LogsForMyFamily::Logger do
       end
     end
   end
+
+  describe '#proc_for_event_data' do
+    let(:proc) { subject.proc_for_event_data(on: :foo) }
+
+    it { expect(proc).to be_a(Proc) }
+
+    context 'when evaluated' do
+      it { expect(proc.call({foo: 'asdf'})).to be_a(Numeric) }
+      it { expect(proc.call({foo: 'asdf'})).to be >= 0.0 }
+      it { expect(proc.call({foo: 'asdf'})).to be <= 1.0 }
+    end
+  end
 end
