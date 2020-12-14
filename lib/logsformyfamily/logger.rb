@@ -56,7 +56,7 @@ module LogsForMyFamily
       self
     end
 
-    def proc_for_event_data(on: on)
+    def proc_for_event_data(on)
       Proc.new { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2147483647).to_f / 2147483646.0 }
     end
 
@@ -81,6 +81,8 @@ module LogsForMyFamily
         internal_log(index, level, event_type, event_data)
       end
     end
+
+    private
 
     def internal_log(level, level_name, event_type, event_data)
       timestamp = Time.now.to_f # Do this first before filtering or any other things

@@ -205,7 +205,7 @@ RSpec.describe LogsForMyFamily::Logger do
   end
 
   describe '#proc_for_event_data' do
-    let(:proc) { subject.proc_for_event_data(on: :foo) }
+    let(:proc) { subject.proc_for_event_data(:foo) }
 
     it { expect(proc).to be_a(Proc) }
 
