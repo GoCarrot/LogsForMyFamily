@@ -14,7 +14,7 @@ GEM
     parser (2.7.2.0)
       ast (~> 2.4.1)
     rainbow (3.0.0)
-    rake (10.5.0)
+    rake (12.3.3)
     rexml (3.2.4)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -47,7 +47,7 @@ DEPENDENCIES
   bundler (~> 1.17)
   gem-release (~> 2.0)
   logsformyfamily!
-  rake (~> 10.0)
+  rake (~> 12.3.3)
   rspec (~> 3.0)
   rubocop
 
