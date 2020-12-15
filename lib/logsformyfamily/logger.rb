@@ -19,22 +19,13 @@ module LogsForMyFamily
 
     def initialize
       @backends = []
-      @host_config = {}
+      @configuration = LogsForMyFamily.configuration.to_h
       @request_config = {}
       @event_id = 0
       @filter_level = 0
       @filter_percent = 1.0
       @filter_percent_on = nil
       @filter_percent_below_level = 0
-    end
-
-    def configure_for(version: nil, hostname: `hostname`.strip, app_name: ENV['NEWRELIC_APP'])
-      @host_config = {
-        version: version,
-        hostname: hostname,
-        app_name: app_name
-      }
-      self
     end
 
     def set_request(client_request_info: {}, request_id: ENV['core_app.request_id'])
@@ -103,7 +94,7 @@ module LogsForMyFamily
         thread_id: Thread.current.object_id,
         event_id: @event_id
       }
-                    .merge(@host_config)
+                    .merge(@configuration)
                     .merge(@request_config)
                     .merge(event_data)
 

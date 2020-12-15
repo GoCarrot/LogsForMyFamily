@@ -20,7 +20,21 @@ class RspecLogBackend
   end
 end
 
+test_configuration_values = {
+  version: 'abcd',
+  hostname: 'somehost',
+  app_name: 'an_appname'
+}
+
+LogsForMyFamily.configure do |config|
+  config.version = test_configuration_values[:version]
+  config.hostname = test_configuration_values[:hostname]
+  config.app_name = test_configuration_values[:app_name]
+end
+
 RSpec.configure do |config|
+  config.before(:example) { @test_configuration_values = test_configuration_values }
+
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
 
