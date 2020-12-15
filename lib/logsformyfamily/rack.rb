@@ -8,9 +8,8 @@ module LogsForMyFamily
     end
 
     def call(env)
-      @app.call(env.merge({
-                            'logsformyfamily.logger' => @logger.clone.set_request
-                          }))
+      env['logsformyfamily.logger'] = @logger.clone.set_request(env)
+      @app.call(env)
     end
   end
 end

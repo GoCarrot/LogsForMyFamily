@@ -21,6 +21,7 @@ module LogsForMyFamily
     def initialize
       @backends = LogsForMyFamily.configuration.backends
       @configuration = LogsForMyFamily.configuration.to_h
+      @request_id = LogsForMyFamily.configuration.request_id
       @request_config = {}
       @event_id = 0
       @filter_level = 0
@@ -29,16 +30,13 @@ module LogsForMyFamily
       @filter_percent_below_level = 0
     end
 
-    def set_request(client_request_info: {}, request_id: ENV['core_app.request_id'])
-      @request_config = {
-        request_id: request_id,
-        client_request_info: client_request_info
-      }
+    def set_request(env)
+      @request_config[:request_id] = @request_id.call(env)
       self
     end
 
-    def merge_client_request_info(info)
-      @request_config[:client_request_info] = @request_config[:client_request_info].merge(info)
+    def set_client_request_info(info)
+      @request_config[:client_request_info] = info
       self
     end
 

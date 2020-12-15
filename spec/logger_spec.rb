@@ -49,12 +49,10 @@ RSpec.describe LogsForMyFamily::Logger do
   end
 
   describe '#set_request' do
-    let(:client_request_info) { { foo: 'bar', fizz: 'buzz' } }
     let(:request_id) { 'arequestid' }
 
     before do
-      ENV['core_app.request_id'] = request_id
-      subject.set_request(client_request_info: client_request_info)
+      subject.set_request({ 'core_app.request_id' => request_id })
     end
 
     it 'contains the request_id' do
@@ -63,27 +61,20 @@ RSpec.describe LogsForMyFamily::Logger do
       expect(last_log.level).to eql :info
       expect(last_log.data).to include(request_id: request_id)
     end
+  end
 
-    it 'contains the client-provided request info' do
+  describe '#set_client_request_info' do
+    let(:client_request_info) { { brew: :haha } }
+
+    before do
+      subject.set_client_request_info client_request_info
+    end
+
+    it 'contains the client request info' do
       subject.info('foo', 'bar')
       expect(last_log).not_to be nil
       expect(last_log.level).to eql :info
-      expect(last_log.data).to include(client_request_info: client_request_info)
-    end
-
-    describe '#merge_client_request_info' do
-      let(:added_client_request_info) { { brew: :haha } }
-
-      before do
-        subject.merge_client_request_info added_client_request_info
-      end
-
-      it 'contains the merged client request info' do
-        subject.info('foo', 'bar')
-        expect(last_log).not_to be nil
-        expect(last_log.level).to eql :info
-        expect(last_log.data).to include(client_request_info: hash_including(added_client_request_info))
-      end
+      expect(last_log.data).to include(client_request_info: hash_including(client_request_info))
     end
   end
 

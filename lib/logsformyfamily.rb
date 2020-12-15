@@ -16,13 +16,14 @@ module LogsForMyFamily
   end
 
   class Configuration
-    attr_accessor :version, :hostname, :app_name, :backends
+    attr_accessor :version, :hostname, :app_name, :backends, :request_id
 
     def initialize
       @version = `git rev-parse --short HEAD`.chomp
       @hostname = `hostname`.strip
       @app_name = ENV['NEWRELIC_APP']
       @backends = []
+      @request_id = proc { |env| env['core_app.request_id'] }
     end
 
     def to_h
