@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'logsformyfamily/logger'
+require 'logsformyfamily/rack'
 require 'logsformyfamily/version'
 
 module LogsForMyFamily
@@ -21,6 +22,7 @@ module LogsForMyFamily
       @version = `git rev-parse --short HEAD`.chomp
       @hostname = `hostname`.strip
       @app_name = ENV['NEWRELIC_APP']
+      @backends = []
     end
 
     def to_h

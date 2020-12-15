@@ -19,7 +19,7 @@ module LogsForMyFamily
     ].freeze
 
     def initialize
-      @backends = []
+      @backends = LogsForMyFamily.configuration.backends
       @configuration = LogsForMyFamily.configuration.to_h
       @request_config = {}
       @event_id = 0
