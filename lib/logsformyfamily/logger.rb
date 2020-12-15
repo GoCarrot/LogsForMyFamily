@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'digest'
 
 module LogsForMyFamily
@@ -53,10 +54,10 @@ module LogsForMyFamily
     end
 
     def proc_for_event_data(on)
-      Proc.new { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2147483647).to_f / 2147483646.0 }
+      proc { |data| (Digest::SHA256.hexdigest(data[on]).to_i(16) % 2_147_483_647).to_f / 2_147_483_646.0 }
     end
 
-    def filter_percentage(percent: 1.0, on: Proc.new { rand }, below_level: 1)
+    def filter_percentage(percent: 1.0, on: proc { rand }, below_level: 1)
       @filter_percent = percent
 
       below_level = LEVELS.find_index(below_level) if below_level.is_a?(Symbol)

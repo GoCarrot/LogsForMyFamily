@@ -137,7 +137,7 @@ RSpec.describe LogsForMyFamily::Logger do
     context 'when logging 25% of calls with stubbed values: [0.1, 0.2, 0.3]' do
       before do
         test_values = [0.1, 0.2, 0.3]
-        subject.filter_percentage(percent: 0.25, on: Proc.new { test_values.slice!(0) })
+        subject.filter_percentage(percent: 0.25, on: proc { test_values.slice!(0) })
       end
 
       it 'logs the first two calls, but not the third' do
@@ -204,9 +204,9 @@ RSpec.describe LogsForMyFamily::Logger do
     it { expect(proc).to be_a(Proc) }
 
     context 'when evaluated' do
-      it { expect(proc.call({foo: 'asdf'})).to be_a(Numeric) }
-      it { expect(proc.call({foo: 'asdf'})).to be >= 0.0 }
-      it { expect(proc.call({foo: 'asdf'})).to be <= 1.0 }
+      it { expect(proc.call({ foo: 'asdf' })).to be_a(Numeric) }
+      it { expect(proc.call({ foo: 'asdf' })).to be >= 0.0 }
+      it { expect(proc.call({ foo: 'asdf' })).to be <= 1.0 }
     end
   end
 end
