@@ -4,11 +4,10 @@ module LogsForMyFamily
   class Rack
     def initialize(app)
       @app = app
-      @logger = LogsForMyFamily::Logger.new
     end
 
     def call(env)
-      env['logsformyfamily.logger'] = @logger.clone.set_request(env)
+      Thread.current.thread_variable_set('logsformyfamily.logger', LogsForMyFamily::Logger.new.set_request(env))
       @app.call(env)
     end
   end
