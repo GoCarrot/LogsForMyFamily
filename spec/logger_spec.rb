@@ -190,14 +190,26 @@ RSpec.describe LogsForMyFamily::Logger do
   end
 
   describe '#proc_for_event_data' do
-    let(:proc) { subject.proc_for_event_data(:foo) }
+    context 'when provided a single symbol' do
+      let(:proc) { subject.proc_for_event_data(:foo) }
+      let(:data) { { foo: 'asdf' } }
 
-    it { expect(proc).to be_a(Proc) }
+      it { expect(proc).to be_a(Proc) }
 
-    context 'when evaluated' do
-      it { expect(proc.call({ foo: 'asdf' })).to be_a(Numeric) }
-      it { expect(proc.call({ foo: 'asdf' })).to be >= 0.0 }
-      it { expect(proc.call({ foo: 'asdf' })).to be <= 1.0 }
+      it { expect(proc.call(data)).to be_a(Numeric) }
+      it { expect(proc.call(data)).to be >= 0.0 }
+      it { expect(proc.call(data)).to be <= 1.0 }
+    end
+
+    context 'when provided multiple symbols' do
+      let(:proc) { subject.proc_for_event_data(:foo, :bar) }
+      let(:data) { { foo: { bar: 'xyzw' } } }
+
+      it { expect(proc).to be_a(Proc) }
+
+      it { expect(proc.call(data)).to be_a(Numeric) }
+      it { expect(proc.call(data)).to be >= 0.0 }
+      it { expect(proc.call(data)).to be <= 1.0 }
     end
   end
 end
