@@ -40,6 +40,10 @@ module LogsForMyFamily
       self
     end
 
+    def request_id
+      @request_config[:request_id]
+    end
+
     def filter_level(level)
       level = LEVELS.find_index(level) if level.is_a?(Symbol)
       @filter_level = level

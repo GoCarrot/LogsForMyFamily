@@ -2,6 +2,7 @@
 
 require 'logsformyfamily/logger'
 require 'logsformyfamily/rack'
+require 'logsformyfamily/sidekiq'
 require 'logsformyfamily/version'
 
 module LogsForMyFamily
