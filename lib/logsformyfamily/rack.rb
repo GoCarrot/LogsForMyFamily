@@ -7,7 +7,8 @@ module LogsForMyFamily
     end
 
     def call(env)
-      Thread.current.thread_variable_set('logsformyfamily.logger', LogsForMyFamily::Logger.new.set_request(env))
+      logger = LogsForMyFamily::Logger.new.set_request(env)
+      LogsForMyFamily.logger = logger
       @app.call(env)
     end
   end

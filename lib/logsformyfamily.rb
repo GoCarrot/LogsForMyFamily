@@ -11,6 +11,20 @@ module LogsForMyFamily
     attr_accessor :configuration
   end
 
+  def self.logger
+    Thread.current.thread_variable_get(:'logsformyfamily.logger')
+  end
+
+  def self.logger=(val)
+    Thread.current.thread_variable_set(:'logsformyfamily.logger', val)
+  end
+
+  module LocalLogger
+    def logger
+      @logger ||= LogsForMyFamily.logger || LogsForMyFamily::Logger.new
+    end
+  end
+
   def self.configure
     yield(configuration)
   end
