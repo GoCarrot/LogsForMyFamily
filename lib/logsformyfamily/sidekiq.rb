@@ -4,7 +4,7 @@ module LogsForMyFamily
   module Sidekiq
     class Client
       def call(worker_class, job, queue, redis_pool)
-        logger = Thread.current.thread_variable_get(:'logsformyfamily.logger')
+        logger = LogsForMyFamily.logger
         if logger
           job[:'logsformyfamily.context'] = {
             request_id: logger.request_id,
