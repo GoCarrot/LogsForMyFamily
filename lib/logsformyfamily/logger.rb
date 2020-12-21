@@ -94,7 +94,8 @@ module LogsForMyFamily
         pid: Process.pid,
         timestamp: timestamp,
         thread_id: Thread.current.object_id,
-        event_id: @event_id
+        event_id: @event_id,
+        log_version: LogsForMyFamily::VERSION
       }
                     .merge(@configuration)
                     .merge(@request_config)
