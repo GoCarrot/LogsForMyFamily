@@ -6,7 +6,7 @@ module LogsForMyFamily
       def call(worker_class, job, queue, redis_pool)
         logger = Thread.current.thread_variable_get(:'logsformyfamily.logger')
         if logger
-          job['logsformyfamily.context'] = {
+          job[:'logsformyfamily.context'] = {
             request_id: logger.request_id,
             queue: queue
           }
