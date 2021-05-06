@@ -17,14 +17,10 @@ module LogsForMyFamily
 
     class Server
       def call(worker, job, queue)
-        begin
-          logger = LogsForMyFamily::Logger.new.set_client_request_info(job['logsformyfamily.context'])
-          logger.set_request_id(job['jid'])
-          LogsForMyFamily.logger = logger
-          yield
-        rescue => ex
-          puts ex.message
-        end
+        logger = LogsForMyFamily::Logger.new.set_client_request_info(job['logsformyfamily.context'])
+        logger.set_request_id(job['jid'])
+        LogsForMyFamily.logger = logger
+        yield
       end
     end
   end
