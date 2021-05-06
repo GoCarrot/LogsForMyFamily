@@ -63,6 +63,21 @@ RSpec.describe LogsForMyFamily::Logger do
     end
   end
 
+  describe '#set_request_id' do
+    let(:request_id) { 'arequestid' }
+
+    before do
+      subject.set_request_id(request_id)
+    end
+
+    it 'contains the request_id' do
+      subject.info('foo', 'bar')
+      expect(last_log).not_to be nil
+      expect(last_log.level).to eql :info
+      expect(last_log.data).to include(request_id: request_id)
+    end
+  end
+
   describe '#set_client_request_info' do
     let(:client_request_info) { { brew: :haha } }
 

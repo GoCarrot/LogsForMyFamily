@@ -35,6 +35,11 @@ module LogsForMyFamily
       self
     end
 
+    def set_request_id(id)
+      @request_config[:request_id] = id
+      self
+    end
+
     def set_client_request_info(info)
       @request_config[:client_request_info] = info
       self
