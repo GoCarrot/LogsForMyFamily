@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    logsformyfamily (0.1.10)
+    logsformyfamily (0.1.11)
 
 GEM
   remote: https://rubygems.org/
