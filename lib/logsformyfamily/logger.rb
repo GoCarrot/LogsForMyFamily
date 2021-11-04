@@ -55,6 +55,10 @@ module LogsForMyFamily
       self
     end
 
+    def level
+      LEVELS[@filter_level]
+    end
+
     def clear_filter_level
       @filter_level = 0
       self

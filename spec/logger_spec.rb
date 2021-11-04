@@ -111,6 +111,10 @@ RSpec.describe LogsForMyFamily::Logger do
           subject.filter_level level
         end
 
+        it "provides the correct level on read" do
+          expect(subject.level).to eq level
+        end
+
         if index > 0
           LogsForMyFamily::Logger::LEVELS[0..(index - 1)].each do |inner_level|
             it "does not log messages with level: #{inner_level}" do
