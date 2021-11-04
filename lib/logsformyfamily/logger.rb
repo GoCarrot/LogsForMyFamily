@@ -80,7 +80,7 @@ module LogsForMyFamily
     end
 
     LEVELS.each_with_index do |level, index|
-      define_method level do |event_type, event_data|
+      define_method level do |event_type, event_data = nil|
         internal_log(index, level, event_type, event_data)
       end
     end
@@ -92,6 +92,14 @@ module LogsForMyFamily
 
       # Filter based on log level
       return unless level >= @filter_level
+
+      # If we have no event data, but we have an event type, figure we were called using a regular
+      # ruby logger type call, i.e. logger.info('some message'). Rework that to match our structured
+      # log format.
+      if event_data.nil? && !event_type.nil?
+        event_data = event_type
+        event_type = :log_message
+      end
 
       event_data = { message: event_data } unless event_data.is_a?(Hash)
 

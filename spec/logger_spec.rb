@@ -41,6 +41,17 @@ RSpec.describe LogsForMyFamily::Logger do
     end
   end
 
+  context 'with only event_type provided' do
+    it 'sets event_type to log_message and puts the message under a message key in data' do
+      subject.info('foo')
+      expect(last_log).to have_attributes(
+        level: :info,
+        type: :log_message,
+        data: a_hash_including(message: 'foo')
+      )
+    end
+  end
+
   it 'contains the configuration values' do
     subject.info('foo', 'bar')
     expect(last_log).not_to be nil
