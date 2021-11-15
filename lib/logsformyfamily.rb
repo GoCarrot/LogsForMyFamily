@@ -34,7 +34,7 @@ module LogsForMyFamily
     attr_accessor :version, :hostname, :app_name, :backends, :request_id
 
     def initialize
-      @version = `git rev-parse --short HEAD`.chomp
+      @version = `command -v git && git rev-parse --short HEAD`.chomp
       @hostname = `hostname`.strip
       @app_name = ENV['NEWRELIC_APP']
       @backends = []
