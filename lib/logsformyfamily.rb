@@ -31,7 +31,7 @@ module LogsForMyFamily
   end
 
   class Configuration
-    attr_accessor :version, :hostname, :app_name, :backends, :request_id
+    attr_accessor :version, :hostname, :app_name, :backends, :request_id, :level
 
     def initialize
       @version =
@@ -44,6 +44,7 @@ module LogsForMyFamily
       @app_name = ENV['NEWRELIC_APP']
       @backends = []
       @request_id = proc { |env| env['core_app.request_id'] }
+      @level = :debug
     end
 
     def to_h

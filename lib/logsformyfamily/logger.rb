@@ -22,9 +22,9 @@ module LogsForMyFamily
       @backends = LogsForMyFamily.configuration.backends
       @configuration = LogsForMyFamily.configuration.to_h
       @request_id = LogsForMyFamily.configuration.request_id
+      filter_level(LogsForMyFamily.configuration.level)
       @request_config = {}
       @event_id = 0
-      @filter_level = 0
       @filter_percent = 1.0
       @filter_percent_on = nil
       @filter_percent_below_level = 0
